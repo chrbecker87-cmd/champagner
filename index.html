@@ -22,8 +22,15 @@
   .progress{height:8px;background:#eee;border-radius:999px;overflow:hidden}
   .progress>div{height:100%;background:#111;transform-origin:left;transition:.2s width}
   .panel{border:1px solid var(--ring);border-radius:18px;background:#fff;padding:16px;box-shadow:0 3px 14px rgba(0,0,0,.03)}
-  .controls{display:grid;grid-template-columns:1fr 190px 190px 210px;gap:12px;margin:20px 0}
-  @media (max-width:980px){.controls{grid-template-columns:1fr 1fr}.controls .wide{grid-column:1/-1}}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:16px;
+}
+
+@media (max-width:760px){
+  .grid{grid-template-columns:1fr}
+}  @media (max-width:980px){.controls{grid-template-columns:1fr 1fr}.controls .wide{grid-column:1/-1}}
   @media (max-width:680px){.controls{grid-template-columns:1fr}.container{padding:16px}}
   .input,.select,.textarea{width:100%;padding:10px 12px;border:1px solid var(--ring);border-radius:12px;background:#fff;color:var(--txt)}
   .textarea{min-height:76px;resize:vertical}
@@ -219,14 +226,23 @@
       || crypto.randomUUID();
   }
   const hasValidDate = v => v && (/^\d{4}-\d{2}-\d{2}$/.test(v) || /^\d{2}\.\d{2}\.\d{4}$/.test(v));
-  const formatDateTTMMJJJJ = v => {
-    if (!v) return "";
-    const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
-    if (iso) return `${iso[3]}.${iso[2]}.${iso[1]}`;
-    const de = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v);
-    if (de) return `${de[1]}.${de[2]}.${de[3]}`;
-    return "";
-  };
+const toISODate = v => {
+  if (!v) return "";
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+  if (iso) return v;
+
+  const de = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v);
+  if (de) return `${de[3]}-${de[2]}-${de[1]}`;
+
+  return "";
+};
+
+const formatDateTTMMJJJJ = v => {
+  const isoValue = toISODate(v);
+  if (!isoValue) return "";
+  const [y, m, d] = isoValue.split("-");
+  return `${d}.${m}.${y}`;
+};
   const clampScore = v => {
     if (v==="" || v==null) return "";
     let n = parseInt(v,10); if (isNaN(n)) return "";
