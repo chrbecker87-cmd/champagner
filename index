@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)file:///E:/Neuer%20Ordner/test.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Romy &amp; Chris – Champagne Tasting</title>
+<style>
+  :root{
+    --bg:#fafafa; --txt:#111827; --muted:#6b7280; --ring:#e5e7eb;
+    --card:#ffffff; --card-green:#ecfdf5; --ring-green:#a7f3d0;
+    --gold-bg:#fffbeb; --gold:#92400e; --rose-bg:#fff1f2; --rose:#9f1239;
+    --emerald:#065f46; --amber:#b45309; --danger:#b91c1c;
+  }
+  *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";}
+  body{margin:0;background:var(--bg);color:var(--txt);}
+  header{background:linear-gradient(#f4f4f5, #fffbeb 38%, #fafafa);}
+  h1,h2,h3{margin:0;font-weight:650}
+  button,input,select,textarea{font:inherit}
+  .container{max-width:1180px;margin:0 auto;padding:24px;}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .progress{height:8px;background:#eee;border-radius:999px;overflow:hidden}
+  .progress>div{height:100%;background:#111;transform-origin:left;transition:.2s width}
+  .panel{border:1px solid var(--ring);border-radius:18px;background:#fff;padding:16px;box-shadow:0 3px 14px rgba(0,0,0,.03)}
+  .controls{display:grid;grid-template-columns:1fr 190px 190px 210px;gap:12px;margin:20px 0}
+  @media (max-width:980px){.controls{grid-template-columns:1fr 1fr}.controls .wide{grid-column:1/-1}}
+  @media (max-width:680px){.controls{grid-template-columns:1fr}.container{padding:16px}}
+  .input,.select,.textarea{width:100%;padding:10px 12px;border:1px solid var(--ring);border-radius:12px;background:#fff;color:var(--txt)}
+  .textarea{min-height:76px;resize:vertical}
+  .switch{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--ring);border-radius:12px;background:#fff}
+  .btn{border:1px solid #111827;background:#111827;color:white;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600}
+  .btn.secondary{background:#fff;color:#111827;border-color:var(--ring)}
+  .btn.danger{background:#fff;color:var(--danger);border-color:#fecaca}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
+  .card{border:1px solid var(--ring);border-radius:18px;padding:14px;background:var(--card);transition:.15s box-shadow,.15s transform;min-height:260px;}
+  .card:hover{box-shadow:0 5px 20px rgba(0,0,0,.06);transform:translateY(-1px)}
+  .card.tasted{background:var(--card-green);border-color:var(--ring-green)}
+  .title{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .title h3{margin:4px 0 2px 0;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+  .badge{white-space:nowrap;flex-shrink:0;background:var(--gold-bg);color:var(--gold);border:1px solid #fde68a;border-radius:999px;padding:2px 8px;font-size:12px}
+  .badge.rose{background:var(--rose-bg);color:var(--rose);border-color:#fecdd3}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .row label{align-self:center;font-size:14px}
+  .score{display:flex;align-items:center;gap:8px}
+  .score label{width:60px;font-size:14px}
+  .score input{width:100%;padding:8px 10px;border:1px solid var(--ring);border-radius:10px}
+  .status{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:14px;gap:8px;flex-wrap:wrap}
+  .green{color:var(--emerald);font-weight:600}
+  .amber{color:var(--amber);font-weight:700}
+  .grapes{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{border:1px solid var(--ring);border-radius:999px;padding:3px 8px;background:#fff;font-size:12px}
+  .form-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr .7fr;gap:10px}
+  @media (max-width:900px){.form-grid{grid-template-columns:1fr 1fr}.form-grid .full{grid-column:1/-1}}
+  @media (max-width:620px){.form-grid{grid-template-columns:1fr}}
+  .grape-editor{display:grid;gap:8px;margin-top:8px}
+  .grape-line{display:grid;grid-template-columns:1fr 100px 42px;gap:8px;align-items:center}
+  .sum-ok{color:var(--emerald);font-weight:600}.sum-bad{color:var(--danger);font-weight:600}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .footer-quote{margin-top:28px;padding:20px;border:1px solid var(--ring);border-radius:16px;background:#fff;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container" style="text-align:center;padding:30px 16px">
+    <h1 style="font-size:30px">Romy &amp; Chris – Champagne Tasting</h1>
+    <div class="muted">Eine flexible Liste für Häuser, Grower, Jahrgänge, Rebsorten und Bewertungen.</div>
+    <div style="max-width:580px;margin:16px auto 0">
+      <div class="progress"><div id="progressBar" style="width: 50%;"></div></div>
+      <div id="progressText" class="muted small" style="margin-top:6px">Fortschritt: 1/2 Champagner (50%)</div>
+    </div>
+  </div>
+</header>
+
+<section class="container">
+  <div class="panel">
+    <h2 style="font-size:20px">Champagner hinzufügen</h2>
+    <div class="muted small" style="margin-top:4px">Trag einfach ein, was ihr probieren wollt. Die Rebsorten kannst du frei kombinieren; die Prozent-Summe wird geprüft.</div>
+
+    <div class="form-grid" style="margin-top:14px">
+      <input id="newName" class="input full" placeholder="Name, z. B. Charles Heidsieck Brut Réserve">
+      <input id="newHouse" class="input" placeholder="Haus / Winzer, z. B. Charles Heidsieck">
+      <select id="newStyle" class="select">
+        <option>Brut</option><option>Extra Brut</option><option>Brut Nature</option><option>Demi-Sec</option>
+        <option>Blanc de Blancs</option><option>Blanc de Noirs</option><option>Rosé</option><option>Vintage</option><option>Prestige Cuvée</option><option>Sonstiges</option>
+      </select>
+      <input id="newVintage" class="input" type="number" min="1900" max="2100" placeholder="Jahrgang">
+      <input id="newRegion" class="input" placeholder="Ort/Region, z. B. Reims, Aÿ, Le Mesnil">
+      <textarea id="newNotes" class="textarea full" placeholder="Notizen: cremig, brioche, nussig, zu energetisch, etc."></textarea>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong class="small">Rebsorten</strong>
+      <div id="newGrapes" class="grape-editor"><div class="grape-line"><select class="select"><option selected="">Chardonnay</option><option>Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div><div class="grape-line"><select class="select"><option>Chardonnay</option><option selected="">Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div><div class="grape-line"><select class="select"><option>Chardonnay</option><option>Pinot Noir</option><option selected="">Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div></div>
+      <div class="actions">
+        <button id="addGrapeBtn" class="btn secondary" type="button">+ Rebsorte</button>
+        <span id="grapeSum" class="small muted" style="align-self:center">Summe: 0%</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="addWineBtn" class="btn" type="button">Champagner speichern</button>
+      <button id="resetFormBtn" class="btn secondary" type="button">Formular leeren</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <input id="search" class="input wide" placeholder="Suche nach Name, Haus, Stil, Region, Rebsorte, Jahrgang…">
+    <select id="styleFilter" class="select"><option>Alle Stile</option><option>Brut</option><option>Extra Brut</option><option>Brut Nature</option><option>Demi-Sec</option><option>Blanc de Blancs</option><option>Blanc de Noirs</option><option>Rosé</option><option>Vintage</option><option>Prestige Cuvée</option><option>Sonstiges</option></select>
+    <select id="grapeFilter" class="select"><option>Alle Rebsorten</option><option>Chardonnay</option><option>Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select>
+    <label class="switch"><input type="checkbox" id="onlyTasted"> Nur verkostete zeigen</label>
+  </div>
+
+  <div id="grid" class="grid"><div class="card"><div class="title"><h3>Dom Pérignon 2017</h3><div class="badge">Prestige Cuvée</div></div><div class="muted small">Dom Pérignon · 2017 · Épernay</div><div class="grapes"><span class="chip">Chardonnay</span><span class="chip">Pinot Noir</span></div><div class="small muted">Rebsorten-Summe: offen</div><div class="row"><label>Verkostet am</label><input class="input" type="date"></div><div class="row"><div class="score"><label>Romy</label><input type="number" min="0" max="100" placeholder="0–100"></div><div class="score"><label>Chris</label><input type="number" min="0" max="100" placeholder="0–100"></div></div><textarea class="textarea" placeholder="Notizen"></textarea><div class="status"><div class="muted">Noch nicht verkostet</div><div class="amber"></div></div><details style="margin-top: 10px;"><summary class="small" style="cursor:pointer;font-weight:600">Details bearbeiten</summary><div class="grape-editor" style="margin-top: 10px;"><div class="form-grid"><input class="input" placeholder="Name"><input class="input" placeholder="Haus / Winzer"><input class="input" placeholder="Jahrgang"><input class="input" placeholder="Region"><select class="select"><option>Brut</option><option>Extra Brut</option><option>Brut Nature</option><option>Demi-Sec</option><option>Blanc de Blancs</option><option>Blanc de Noirs</option><option>Rosé</option><option>Vintage</option><option selected="">Prestige Cuvée</option><option>Sonstiges</option></select></div><div class="grape-editor" style="margin-top: 8px;"><div class="grape-line"><select class="select"><option selected="">Chardonnay</option><option>Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div><div class="grape-line"><select class="select"><option>Chardonnay</option><option selected="">Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div></div><div class="actions"><button class="btn secondary" type="button">+ Rebsorte</button><button class="btn secondary" type="button">Rebsorten speichern</button><button class="btn danger" type="button">Löschen</button></div></div></details></div><div class="card tasted"><div class="title"><h3>Krug Vintage 2002</h3><div class="badge">Vintage</div></div><div class="muted small">Krug · 2002 · Reims</div><div class="grapes"><span class="chip">Pinot Noir 40%</span><span class="chip">Chardonnay 39%</span><span class="chip">Meunier / Pinot Meunier 21%</span></div><div class="small sum-ok">Rebsorten-Summe: 100%</div><div class="row"><label>Verkostet am</label><input class="input" type="date"></div><div class="row"><div class="score"><label>Romy</label><input type="number" min="0" max="100" placeholder="0–100"></div><div class="score"><label>Chris</label><input type="number" min="0" max="100" placeholder="0–100"></div></div><textarea class="textarea" placeholder="Notizen"></textarea><div class="status"><div class="green">Verkostet am 31.12.2025</div><div class="amber">Ø 98/100</div></div><details style="margin-top: 10px;"><summary class="small" style="cursor:pointer;font-weight:600">Details bearbeiten</summary><div class="grape-editor" style="margin-top: 10px;"><div class="form-grid"><input class="input" placeholder="Name"><input class="input" placeholder="Haus / Winzer"><input class="input" placeholder="Jahrgang"><input class="input" placeholder="Region"><select class="select"><option>Brut</option><option>Extra Brut</option><option>Brut Nature</option><option>Demi-Sec</option><option>Blanc de Blancs</option><option>Blanc de Noirs</option><option>Rosé</option><option selected="">Vintage</option><option>Prestige Cuvée</option><option>Sonstiges</option></select></div><div class="grape-editor" style="margin-top: 8px;"><div class="grape-line"><select class="select"><option>Chardonnay</option><option selected="">Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div><div class="grape-line"><select class="select"><option selected="">Chardonnay</option><option>Pinot Noir</option><option>Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div><div class="grape-line"><select class="select"><option>Chardonnay</option><option>Pinot Noir</option><option selected="">Meunier / Pinot Meunier</option><option>Arbane</option><option>Petit Meslier</option><option>Pinot Blanc / Blanc Vrai</option><option>Pinot Gris / Fromenteau</option><option>Voltis</option><option>Chardonnay Rose</option></select><input class="input" type="number" min="0" max="100" step="0.1" placeholder="%"><button class="btn secondary" type="button" title="Rebsorte entfernen">×</button></div></div><div class="actions"><button class="btn secondary" type="button">+ Rebsorte</button><button class="btn secondary" type="button">Rebsorten speichern</button><button class="btn danger" type="button">Löschen</button></div></div></details></div></div>
+
+  <div id="empty" class="muted" style="text-align:center;display:none;margin:40px 0">
+    Noch keine passenden Einträge gefunden.
+  </div>
+
+  <div class="footer-quote">
+    <em>„Cremig, nicht hektisch.“</em>
+    <div class="muted" style="margin-top:6px">Romy &amp; Chris Champagne Law</div>
+  </div>
+</section>
+
+<script type="module">
+  // Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getFirestore, collection, setDoc, doc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDgqvI3nx97gtWO79EMODiHeGuOCVoQ2S0",
+    authDomain: "grandcru-20020.firebaseapp.com",
+    projectId: "grandcru-20020",
+    storageBucket: "grandcru-20020.appspot.com",
+    messagingSenderId: "618883189419",
+    appId: "1:618883189419:web:dbe8bd2b192e8f987e05ee"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  const COLLECTION = "champagner";
+
+  const GRAPE_OPTIONS = [
+    "Chardonnay",
+    "Pinot Noir",
+    "Meunier / Pinot Meunier",
+    "Arbane",
+    "Petit Meslier",
+    "Pinot Blanc / Blanc Vrai",
+    "Pinot Gris / Fromenteau",
+    "Voltis",
+    "Chardonnay Rose"
+  ];
+
+  const STYLE_OPTIONS = ["Brut","Extra Brut","Brut Nature","Demi-Sec","Blanc de Blancs","Blanc de Noirs","Rosé","Vintage","Prestige Cuvée","Sonstiges"];
+
+  const SAMPLE_DATA = [
+    {
+      id:"charles-heidsieck-brut-reserve",
+      name:"Charles Heidsieck Brut Réserve",
+      house:"Charles Heidsieck",
+      style:"Brut",
+      vintage:"",
+      region:"Reims",
+      grapes:[{name:"Chardonnay",percent:"33"},{name:"Pinot Noir",percent:"33"},{name:"Meunier / Pinot Meunier",percent:"34"}],
+      tastedAt:"",
+      scoreRomy:"",
+      scoreChris:"",
+      notes:"Krug-nahe Richtung: cremig, brioche, Reserveweine."
+    },
+    {
+      id:"dom-perignon-2017",
+      name:"Dom Pérignon 2017",
+      house:"Dom Pérignon",
+      style:"Prestige Cuvée",
+      vintage:"2017",
+      region:"Épernay",
+      grapes:[{name:"Chardonnay",percent:""},{name:"Pinot Noir",percent:""}],
+      tastedAt:"",
+      scoreRomy:"",
+      scoreChris:"",
+      notes:"Sehr gut: cremig, präzise, integrierte Mousse."
+    },
+    {
+      id:"krug-2002",
+      name:"Krug Vintage 2002",
+      house:"Krug",
+      style:"Vintage",
+      vintage:"2002",
+      region:"Reims",
+      grapes:[{name:"Pinot Noir",percent:""},{name:"Chardonnay",percent:""},{name:"Meunier / Pinot Meunier",percent:""}],
+      tastedAt:"",
+      scoreRomy:"",
+      scoreChris:"",
+      notes:"Bisherige Referenz: cremig, tief, komplex, ruhige Perlage."
+    }
+  ];
+
+  const $ = id => document.getElementById(id);
+  const elGrid = $("grid");
+  const elEmpty = $("empty");
+  const elSearch = $("search");
+  const elStyleFilter = $("styleFilter");
+  const elGrapeFilter = $("grapeFilter");
+  const elOnlyTasted = $("onlyTasted");
+  const elProgressBar = $("progressBar");
+  const elProgressTxt = $("progressText");
+  const elNewGrapes = $("newGrapes");
+  const elGrapeSum = $("grapeSum");
+
+  let data = [];
+
+  function slugify(s){
+    return String(s || "")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")
+      || crypto.randomUUID();
+  }
+  const hasValidDate = v => v && (/^\d{4}-\d{2}-\d{2}$/.test(v) || /^\d{2}\.\d{2}\.\d{4}$/.test(v));
+  const formatDateTTMMJJJJ = v => {
+    if (!v) return "";
+    const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+    if (iso) return `${iso[3]}.${iso[2]}.${iso[1]}`;
+    const de = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v);
+    if (de) return `${de[1]}.${de[2]}.${de[3]}`;
+    return "";
+  };
+  const clampScore = v => {
+    if (v==="" || v==null) return "";
+    let n = parseInt(v,10); if (isNaN(n)) return "";
+    return String(Math.max(0, Math.min(100, n)));
+  };
+  const clampYear = v => {
+    if (v==="" || v==null) return "";
+    let n = parseInt(v,10); if (isNaN(n)) return "";
+    return String(Math.max(1900, Math.min(2100, n)));
+  };
+  const clampPercent = v => {
+    if (v==="" || v==null) return "";
+    let n = parseFloat(String(v).replace(",",".")); if (isNaN(n)) return "";
+    return String(Math.max(0, Math.min(100, n)));
+  };
+  const averageScore = (a,b) => {
+    const na = a===""||a==null ? NaN : parseInt(a,10);
+    const nb = b===""||b==null ? NaN : parseInt(b,10);
+    if (isNaN(na) && isNaN(nb)) return "";
+    if (isNaN(na)) return String(nb);
+    if (isNaN(nb)) return String(na);
+    return String(Math.round((na+nb)/2));
+  };
+  const grapeSum = grapes => grapes.reduce((sum,g)=>sum+(parseFloat(String(g.percent||"").replace(",","."))||0),0);
+  const grapesText = grapes => (grapes||[]).map(g => g.percent ? `${g.name} ${g.percent}%` : g.name).join(", ");
+
+  function populateFilters(){
+    elStyleFilter.innerHTML = `<option>Alle Stile</option>` + STYLE_OPTIONS.map(s=>`<option>${s}</option>`).join("");
+    elGrapeFilter.innerHTML = `<option>Alle Rebsorten</option>` + GRAPE_OPTIONS.map(g=>`<option>${g}</option>`).join("");
+  }
+
+  function createGrapeLine(container, grape = {name:"Chardonnay", percent:""}){
+    const line = document.createElement("div");
+    line.className = "grape-line";
+
+    const select = document.createElement("select");
+    select.className = "select";
+    select.innerHTML = GRAPE_OPTIONS.map(g => `<option ${g===grape.name ? "selected" : ""}>${g}</option>`).join("");
+
+    const pct = document.createElement("input");
+    pct.className = "input";
+    pct.type = "number";
+    pct.min = "0";
+    pct.max = "100";
+    pct.step = "0.1";
+    pct.placeholder = "%";
+    pct.value = grape.percent || "";
+
+    const remove = document.createElement("button");
+    remove.className = "btn secondary";
+    remove.type = "button";
+    remove.textContent = "×";
+    remove.title = "Rebsorte entfernen";
+    remove.addEventListener("click", () => { line.remove(); updateNewGrapeSum(); });
+
+    select.addEventListener("change", updateNewGrapeSum);
+    pct.addEventListener("input", updateNewGrapeSum);
+
+    line.appendChild(select);
+    line.appendChild(pct);
+    line.appendChild(remove);
+    container.appendChild(line);
+    updateNewGrapeSum();
+  }
+
+  function readGrapesFrom(container){
+    return [...container.querySelectorAll(".grape-line")].map(line => ({
+      name: line.querySelector("select").value,
+      percent: clampPercent(line.querySelector("input").value)
+    })).filter(g => g.name);
+  }
+
+  function updateNewGrapeSum(){
+    const sum = grapeSum(readGrapesFrom(elNewGrapes));
+    elGrapeSum.textContent = `Summe: ${sum}%` + (sum && sum !== 100 ? " – sollte idealerweise 100% ergeben" : "");
+    elGrapeSum.className = "small " + (sum === 100 ? "sum-ok" : (sum ? "sum-bad" : "muted"));
+  }
+
+  function resetForm(){
+    ["newName","newHouse","newVintage","newRegion","newNotes"].forEach(id => $(id).value = "");
+    $("newStyle").value = "Brut";
+    elNewGrapes.innerHTML = "";
+    createGrapeLine(elNewGrapes, {name:"Chardonnay", percent:""});
+    createGrapeLine(elNewGrapes, {name:"Pinot Noir", percent:""});
+    createGrapeLine(elNewGrapes, {name:"Meunier / Pinot Meunier", percent:""});
+  }
+
+  async function saveWine(wine){
+    await setDoc(doc(db, COLLECTION, wine.id), wine, { merge:true });
+  }
+
+  async function seedSamplesIfEmpty(snapshot){
+    if (!snapshot.empty) return;
+    await Promise.all(SAMPLE_DATA.map(w => saveWine(w)));
+  }
+
+  function subscribe(){
+    const ref = collection(db, COLLECTION);
+    onSnapshot(ref, async snapshot => {
+      await seedSamplesIfEmpty(snapshot);
+      data = [];
+      snapshot.forEach(docSnap => data.push({ id:docSnap.id, ...docSnap.data() }));
+      data.sort((a,b)=>(a.createdAt||"").localeCompare(b.createdAt||"") || (a.name||"").localeCompare(b.name||""));
+      render();
+    }, err => {
+      console.warn("Firestore-Live-Update fehlgeschlagen:", err);
+      data = SAMPLE_DATA;
+      render();
+    });
+  }
+
+  function updateProgress(){
+    const total = data.length || 1;
+    const tasted = data.filter(w=>hasValidDate(w.tastedAt)).length;
+    const pct = Math.round((tasted/total)*100);
+    elProgressBar.style.width = pct + "%";
+    elProgressTxt.textContent = `Fortschritt: ${tasted}/${data.length} Champagner (${pct}%)`;
+  }
+
+  function render(){
+    const q = elSearch.value.trim().toLowerCase();
+    const style = elStyleFilter.value;
+    const grape = elGrapeFilter.value;
+    const onlyTasted = elOnlyTasted.checked;
+
+    const filtered = data
+      .filter(w => style === "Alle Stile" || w.style === style)
+      .filter(w => grape === "Alle Rebsorten" || (w.grapes||[]).some(g => g.name === grape))
+      .filter(w => !onlyTasted || hasValidDate(w.tastedAt))
+      .filter(w => {
+        if (!q) return true;
+        const hay = [w.name,w.house,w.style,w.vintage,w.region,w.notes,grapesText(w.grapes)].join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+
+    elGrid.innerHTML = "";
+    elEmpty.style.display = filtered.length ? "none" : "block";
+
+    filtered.forEach(w => elGrid.appendChild(renderCard(w)));
+    updateProgress();
+  }
+
+  function renderCard(w){
+    const card = document.createElement("div");
+    card.className = "card" + (hasValidDate(w.tastedAt) ? " tasted" : "");
+
+    const head = document.createElement("div"); head.className="title";
+    const h3 = document.createElement("h3"); h3.textContent = w.name || "Unbenannter Champagner";
+    const badge = document.createElement("div"); badge.className = "badge" + ((w.style||"").includes("Rosé") ? " rose" : ""); badge.textContent = w.style || "Champagner";
+    head.appendChild(h3); head.appendChild(badge);
+
+    const meta = document.createElement("div"); meta.className="muted small";
+    meta.textContent = [w.house, w.vintage, w.region].filter(Boolean).join(" · ");
+
+    const chips = document.createElement("div"); chips.className="grapes";
+    (w.grapes||[]).forEach(g => {
+      const chip = document.createElement("span"); chip.className="chip";
+      chip.textContent = g.percent ? `${g.name} ${g.percent}%` : g.name;
+      chips.appendChild(chip);
+    });
+
+    const sum = grapeSum(w.grapes||[]);
+    const sumLine = document.createElement("div"); sumLine.className = "small " + (sum === 100 ? "sum-ok" : (sum ? "sum-bad" : "muted"));
+    sumLine.textContent = sum ? `Rebsorten-Summe: ${sum}%` : "Rebsorten-Summe: offen";
+
+    const note = document.createElement("textarea"); note.className="textarea"; note.placeholder="Notizen"; note.value=w.notes||"";
+    note.addEventListener("blur", async e => { w.notes = e.target.value; await saveWine(w); });
+
+    const rowDate = document.createElement("div"); rowDate.className="row";
+    const lblDate = document.createElement("label"); lblDate.textContent="Verkostet am";
+    const inputDate = document.createElement("input"); inputDate.className="input"; inputDate.type="date";
+    inputDate.value = /^\d{4}-\d{2}-\d{2}$/.test(w.tastedAt||"") ? w.tastedAt : "";
+    inputDate.addEventListener("change", async e => { w.tastedAt = e.target.value || ""; await saveWine(w); updateStatus(); });
+    rowDate.appendChild(lblDate); rowDate.appendChild(inputDate);
+
+    const rowScore = document.createElement("div"); rowScore.className="row";
+    const s1 = document.createElement("div"); s1.className="score";
+    const l1 = document.createElement("label"); l1.textContent="Romy";
+    const i1 = document.createElement("input"); i1.type="number"; i1.min="0"; i1.max="100"; i1.placeholder="0–100"; i1.value=w.scoreRomy||"";
+    i1.addEventListener("blur", async e => { w.scoreRomy=clampScore(e.target.value); e.target.value=w.scoreRomy; await saveWine(w); updateStatus(); });
+    const s2 = document.createElement("div"); s2.className="score";
+    const l2 = document.createElement("label"); l2.textContent="Chris";
+    const i2 = document.createElement("input"); i2.type="number"; i2.min="0"; i2.max="100"; i2.placeholder="0–100"; i2.value=w.scoreChris||"";
+    i2.addEventListener("blur", async e => { w.scoreChris=clampScore(e.target.value); e.target.value=w.scoreChris; await saveWine(w); updateStatus(); });
+    s1.appendChild(l1); s1.appendChild(i1); s2.appendChild(l2); s2.appendChild(i2); rowScore.appendChild(s1); rowScore.appendChild(s2);
+
+    const status = document.createElement("div"); status.className="status";
+    const left = document.createElement("div");
+    const right = document.createElement("div"); right.className="amber";
+    function updateStatus(){
+      card.className = "card" + (hasValidDate(w.tastedAt) ? " tasted" : "");
+      left.className = hasValidDate(w.tastedAt) ? "green" : "muted";
+      left.textContent = hasValidDate(w.tastedAt) ? "Verkostet am " + formatDateTTMMJJJJ(w.tastedAt) : "Noch nicht verkostet";
+      const avg = averageScore(w.scoreRomy||"", w.scoreChris||"");
+      right.textContent = (w.scoreRomy||w.scoreChris) ? (avg ? "Ø "+avg+"/100" : "") : "";
+      updateProgress();
+    }
+    updateStatus();
+    status.appendChild(left); status.appendChild(right);
+
+    const editDetails = document.createElement("details");
+    editDetails.style.marginTop = "10px";
+    editDetails.innerHTML = `<summary class="small" style="cursor:pointer;font-weight:600">Details bearbeiten</summary>`;
+    const editor = document.createElement("div"); editor.style.marginTop = "10px";
+    editor.className = "grape-editor";
+
+    const detailGrid = document.createElement("div"); detailGrid.className="form-grid";
+    const fields = [
+      ["name","Name"],["house","Haus / Winzer"],["vintage","Jahrgang"],["region","Region"]
+    ];
+    fields.forEach(([key,ph]) => {
+      const input = document.createElement("input"); input.className="input"; input.placeholder=ph; input.value=w[key]||"";
+      input.addEventListener("blur", async e => { w[key] = key === "vintage" ? clampYear(e.target.value) : e.target.value; e.target.value=w[key]; if(key==="name" && !w.id) w.id=slugify(w.name); await saveWine(w); });
+      detailGrid.appendChild(input);
+    });
+    const styleSelect = document.createElement("select"); styleSelect.className="select";
+    styleSelect.innerHTML = STYLE_OPTIONS.map(s => `<option ${s===(w.style||"") ? "selected" : ""}>${s}</option>`).join("");
+    styleSelect.addEventListener("change", async e => { w.style=e.target.value; await saveWine(w); });
+    detailGrid.appendChild(styleSelect);
+    editor.appendChild(detailGrid);
+
+    const grapeEdit = document.createElement("div"); grapeEdit.className="grape-editor"; grapeEdit.style.marginTop="8px";
+    (w.grapes && w.grapes.length ? w.grapes : [{name:"Chardonnay",percent:""}]).forEach(g => createGrapeLine(grapeEdit, g));
+    const saveGrapes = document.createElement("button"); saveGrapes.className="btn secondary"; saveGrapes.type="button"; saveGrapes.textContent="Rebsorten speichern";
+    saveGrapes.addEventListener("click", async () => { w.grapes = readGrapesFrom(grapeEdit); await saveWine(w); });
+    const addGrape = document.createElement("button"); addGrape.className="btn secondary"; addGrape.type="button"; addGrape.textContent="+ Rebsorte";
+    addGrape.addEventListener("click", () => createGrapeLine(grapeEdit, {name:"Chardonnay",percent:""}));
+    const del = document.createElement("button"); del.className="btn danger"; del.type="button"; del.textContent="Löschen";
+    del.addEventListener("click", async () => { if(confirm(`${w.name} wirklich löschen?`)) await deleteDoc(doc(db, COLLECTION, w.id)); });
+
+    const editActions = document.createElement("div"); editActions.className="actions";
+    editActions.appendChild(addGrape); editActions.appendChild(saveGrapes); editActions.appendChild(del);
+    editor.appendChild(grapeEdit); editor.appendChild(editActions); editDetails.appendChild(editor);
+
+    card.appendChild(head);
+    card.appendChild(meta);
+    card.appendChild(chips);
+    card.appendChild(sumLine);
+    card.appendChild(rowDate);
+    card.appendChild(rowScore);
+    card.appendChild(note);
+    card.appendChild(status);
+    card.appendChild(editDetails);
+    return card;
+  }
+
+  $("addGrapeBtn").addEventListener("click", () => createGrapeLine(elNewGrapes, {name:"Chardonnay", percent:""}));
+  $("resetFormBtn").addEventListener("click", resetForm);
+  $("addWineBtn").addEventListener("click", async () => {
+    const name = $("newName").value.trim();
+    if (!name) { alert("Bitte mindestens einen Namen eintragen."); return; }
+    const wine = {
+      id: slugify(name + " " + ($("newVintage").value || "")),
+      name,
+      house: $("newHouse").value.trim(),
+      style: $("newStyle").value,
+      vintage: clampYear($("newVintage").value),
+      region: $("newRegion").value.trim(),
+      grapes: readGrapesFrom(elNewGrapes),
+      tastedAt:"",
+      scoreRomy:"",
+      scoreChris:"",
+      notes: $("newNotes").value.trim(),
+      createdAt: new Date().toISOString()
+    };
+    await saveWine(wine);
+    resetForm();
+  });
+
+  elSearch.addEventListener("input", render);
+  elStyleFilter.addEventListener("change", render);
+  elGrapeFilter.addEventListener("change", render);
+  elOnlyTasted.addEventListener("change", render);
+
+  populateFilters();
+  resetForm();
+  subscribe();
+</script>
+
+
+</body></html>
